@@ -7,7 +7,7 @@ This is completely stolen from [Zeal60 command line tool](https://github.com/Wil
 
 ## Setup
 
-This asumes `gmk` is cloned next to this folder:
+This asumes `qmk` is cloned next to this folder:
 
 ```
 git clone git@github.com:rhruiz/hid_send.git
