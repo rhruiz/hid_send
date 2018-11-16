@@ -15,7 +15,7 @@
 
 #include "hidapi/hidapi.h"
 #include "config.h"
-#include "keyboards/dz60/keymaps/rhruiz/rhruiz_api.h"
+#include "users/rhruiz/rhruiz_api.h"
 
 hid_device *
 hid_open( unsigned short vendor_id, unsigned short product_id, unsigned short interface_number )
