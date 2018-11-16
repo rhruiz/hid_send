@@ -28,6 +28,7 @@ git checkout mac-hid-interface-support
 ./configure
 make
 sudo make install
+cd ../
 ```
 
 ## Building
