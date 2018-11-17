@@ -1,25 +1,34 @@
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/queue.h>
+#include <hidapi/hidapi.h>
 
-#include "hidapi/hidapi.h"
+// qmk includes
+#include <users/rhruiz/rhruiz_api.h>
+
 #include "config.h"
-#include "users/rhruiz/rhruiz_api.h"
 
-typedef struct device_paths {
-  struct device_paths* next;
-  char* path;
-} device_paths;
+typedef struct device_path_s device_path_t;
+struct device_path_s {
+  char *path;
+  SLIST_ENTRY(device_path_s) entries;
+};
 
-device_paths* hid_get_device_paths(unsigned short vendor_id,
+typedef SLIST_HEAD(device_path_list, device_path_s) device_path_list_t;
+
+device_path_list_t* hid_get_device_paths(unsigned short vendor_id,
                                    unsigned short product_id,
                                    unsigned short interface_number) {
 
-  struct device_paths* path = NULL;
+  device_path_t *new_device_path;
+  device_path_list_t *device_paths = malloc(sizeof(device_path_list_t));
+
+  SLIST_INIT(device_paths);
+
   struct hid_device_info* device_infos;
   struct hid_device_info* current_device_info;
   struct hid_device_info* found_ddevice_info = NULL;
@@ -28,12 +37,13 @@ device_paths* hid_get_device_paths(unsigned short vendor_id,
 
   while (current_device_info) {
     if (current_device_info->interface_number == interface_number) {
-      struct device_paths* new_device_path = malloc(sizeof(device_paths));
+
       char *device_path = malloc(strlen(current_device_info->path));
       strcpy(device_path, current_device_info->path);
+
+      new_device_path = malloc(sizeof(device_path_t));
       new_device_path->path = device_path;
-      new_device_path->next = path;
-      path = new_device_path;
+      SLIST_INSERT_HEAD(device_paths, new_device_path, entries);
     }
 
     current_device_info = current_device_info->next;
@@ -41,13 +51,12 @@ device_paths* hid_get_device_paths(unsigned short vendor_id,
 
   hid_free_enumeration(device_infos);
 
-  return path;
+  return device_paths;
 }
 
 bool send_message(hid_device* device, uint8_t id, void* out_msg,
                   uint8_t out_msg_length, void* ret_msg,
                   uint8_t ret_msg_length) {
-  // assert( outMsgLength <= RAW_HID_BUFFER_SIZE );
   if (out_msg_length > RAW_HID_BUFFER_SIZE) {
     printf("Message size %d is bigger than maximum %d\n", out_msg_length,
            RAW_HID_BUFFER_SIZE);
@@ -130,41 +139,44 @@ hid_device* hid_open_least_uptime(unsigned short vendor_id,
                                   unsigned short product_id,
                                   unsigned short interface_number) {
 
-  device_paths *paths = hid_get_device_paths(vendor_id, product_id, interface_number);
+  device_path_list_t *paths = hid_get_device_paths(vendor_id, product_id, interface_number);
 
   // early abort
-  if (paths == NULL) {
+  if (SLIST_EMPTY(paths)) {
     return NULL;
   }
 
+  device_path_t *device_path = SLIST_FIRST(paths);
+
   // no need to check ticks
-  if (paths->next == NULL) {
-    return hid_open_path(paths->path);
+  if (SLIST_NEXT(device_path, entries) == NULL) {
+    return hid_open_path(device_path->path);
   }
 
   char *best_device_path = NULL;
   uint32_t best_device_tick = 0;
 
-  while (paths != NULL) {
-    hid_device* device = hid_open_path(paths->path);
+  SLIST_FOREACH(device_path, paths, entries) {
+    hid_device* device = hid_open_path(device_path->path);
 
     uint32_t this_device_tick = 0;
 
     if (!get_keyboard_value_uint32(device, id_uptime, &this_device_tick)) {
-      //std::cerr << "*** Error: Error getting uptime" << std::endl;
+      fprintf(stderr, "*** Error: Error getting uptime\n");
       hid_close(device);
       continue;
     }
 
     if (best_device_path == NULL || this_device_tick < best_device_tick) {
-      best_device_path = paths->path;
+      best_device_path = device_path->path;
       best_device_tick = this_device_tick;
     }
 
-
+    free(device_path);
     hid_close(device);
-    paths = paths->next;
   }
+
+  free(paths);
 
   if (best_device_path != NULL) {
     return hid_open_path(best_device_path);
