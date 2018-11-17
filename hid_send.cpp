@@ -2,15 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include <unistd.h>
 
 #include <cstring>
 #include <string>
 #include <iostream>
-
 #include <vector>
-#include <string>
-
-#include <unistd.h>
 
 #include "hidapi/hidapi.h"
 #include "config.h"
@@ -22,8 +19,10 @@ hid_device* hid_open(unsigned short vendor_id, unsigned short product_id,
   struct hid_device_info* deviceInfos;
   struct hid_device_info* currentDeviceInfo;
   struct hid_device_info* foundDeviceInfo = NULL;
+
   deviceInfos = hid_enumerate(vendor_id, product_id);
   currentDeviceInfo = deviceInfos;
+
   while (currentDeviceInfo) {
     if (currentDeviceInfo->interface_number == interface_number) {
       if (foundDeviceInfo) {
@@ -191,6 +190,7 @@ void hid_test(void) {
 
   devs = hid_enumerate(0x0, 0x0);
   cur_dev = devs;
+
   while (cur_dev) {
     printf(
         "Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls",
@@ -204,12 +204,8 @@ void hid_test(void) {
     printf("\n");
     cur_dev = cur_dev->next;
   }
-  hid_free_enumeration(devs);
-}
 
-bool send_no_arg_message(hid_device* device, uint8_t id) {
-  uint8_t msg[2];
-  return send_message(device, id, msg, sizeof(msg), msg, sizeof(msg));
+  hid_free_enumeration(devs);
 }
 
 bool set_rgblight_to(hid_device* device, uint16_t hue, uint8_t sat) {
@@ -275,15 +271,15 @@ int main(int argc, char** argv) {
   }
 
   if (command == "bootloader") {
-    res = send_no_arg_message(device, id_bootloader_jump);
+    res = send_message(device, id_bootloader_jump);
   }
 
   if (command == "rgblight_reset") {
-    res = send_no_arg_message(device, id_rgblight_reset);
+    res = send_message(device, id_rgblight_reset);
   }
 
   if (command == "backlight_toggle") {
-    res = send_no_arg_message(device, id_backlight_toggle);
+    res = send_message(device, id_backlight_toggle);
   }
 
   if (command == "rgblight_toggle") {
