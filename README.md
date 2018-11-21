@@ -24,7 +24,7 @@ cd hidapi
 git remote add dylanmckay https://github.com/dylanmckay/hidapi.git
 git fetch dylanmckay
 git checkout mac-hid-interface-support
-./bootstap
+./bootstrap
 ./configure
 make
 sudo make install
