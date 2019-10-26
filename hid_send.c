@@ -238,17 +238,24 @@ int main(int argc, char** argv) {
     return 0;
   }
 
+  bool verbose = getenv("VERBOSE") != NULL;
   unsigned short device_vid = DEVICE_VID;
   unsigned short device_pid = DEVICE_PID;
   char *v;
 
   if ((v = getenv("VID")) != NULL) {
-    printf("reading vid %s\n", v);
+    if (verbose) {
+      fprintf(stderr, "reading vid %s\n", v);
+    }
+
     sscanf(v, "%hX", &device_vid);
   }
 
   if ((v = getenv("PID")) != NULL) {
-    printf("reading pid %s\n", v);
+    if (verbose) {
+      fprintf(stderr, "reading pid %s\n", v);
+    }
+
     sscanf(v, "%hX", &device_pid);
   }
 
