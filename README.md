@@ -44,4 +44,7 @@ make
 
 Default values are taken from the constants in hid_send.c and they can be
 overriden using VID and PID environment variables just be sure to use hex
-numbers with 0x format like 0xFEED
+numbers with 0x format like `0xFEED`.
+
+These variables may also be set when running `make` and the binary will be
+generated to values by default.

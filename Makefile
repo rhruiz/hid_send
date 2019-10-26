@@ -12,6 +12,14 @@ else
 	LDFLAGS += -lhidapi-libusb
 endif
 
+ifdef VID
+	CFLAGS += -DDEVICE_VID=$(VID)
+endif
+
+ifdef PID
+	CFLAGS += -DDEVICE_PID=$(PID)
+endif
+
 .PHONY: all
 
 all: hid_send.c config.h
