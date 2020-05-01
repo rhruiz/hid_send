@@ -8,7 +8,7 @@
 #include <hidapi/hidapi.h>
 
 // qmk includes
-#include <users/rhruiz/rhruiz_api.h>
+#include <users/rhruiz/raw_hid/api.h>
 
 #include "config.h"
 
