@@ -208,6 +208,12 @@ void hid_test(void) {
   hid_free_enumeration(devs);
 }
 
+bool oled_write(hid_device* device, char *msg) {
+  printf("sending %s\n", msg);
+  return send_message(device, id_oled_write, msg, strlen(msg), msg,
+                      strlen(msg));
+}
+
 bool set_rgblight_to(hid_device* device, uint16_t hue, uint8_t sat) {
   uint8_t msg[3];
 
@@ -269,6 +275,15 @@ int main(int argc, char** argv) {
 
   bool res = false;
 
+  if (strcmp(command, "oled_write") == 0) {
+    if (argc < 3) {
+      fprintf(stderr, "Usage %s oled_write str\n", argv[0]);
+    } else {
+      char *str = argv[2];
+      res = oled_write(device, str);
+    }
+  }
+
   if (strcmp(command, "rgblight_color") == 0) {
     if (argc < 4) {
       fprintf(stderr, "Usage %s rgblight_color hue sat\n", argv[0]);
@@ -295,6 +310,10 @@ int main(int argc, char** argv) {
 
   if (strcmp(command, "rgblight_reset") == 0) {
     res = send_no_args_message(device, id_rgblight_reset);
+  }
+
+  if (strcmp(command, "oled_clear") == 0) {
+    res = send_no_args_message(device, id_oled_clear);
   }
 
   if (strcmp(command, "backlight_toggle") == 0) {
