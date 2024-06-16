@@ -5,7 +5,11 @@
 #include <string.h>
 #include <stdbool.h>
 #include <sys/queue.h>
+#ifdef OS_DARWIN
+#include <hidapi/hidapi_darwin.h>
+#else
 #include <hidapi/hidapi.h>
+#endif
 
 // qmk includes
 #include <users/rhruiz/raw_hid/api.h>

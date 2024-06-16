@@ -1,12 +1,14 @@
 OSNAME:=$(shell uname -s)
 
-CFLAGS=-I/usr/local/lib -Wno-write-strings -I../qmk_firmware -lc
+CFLAGS=-Wno-write-strings -I../qmk_userspace -lc
 
 # Order of LDFLAGS matters! Remember, linking happens after compiling.
 LDFLAGS=
 
 ifeq ($(OSNAME),Darwin)
-	CFLAGS += -lhidapi
+	BREW_PREFIX:=$(shell brew --prefix)
+	CFLAGS += -I$(BREW_PREFIX)/include -I$(BREW_PREFIX)/lib -I/usr/local/lib -DOS_DARWIN
+	LDFLAGS += -L$(BREW_PREFIX)/lib -lhidapi
 else
 	CFLAGS += -I/usr/local/include/hidapi
 	LDFLAGS += -lhidapi-libusb

@@ -11,25 +11,15 @@ This asumes `qmk` is cloned next to this folder:
 
 ```
 git clone git@github.com:rhruiz/hid_send.git
-git clone git@github.com:rhruiz/qmk_firmware.git
+git clone git@github.com:rhruiz/qmk-userspace.git qmk_userspace
 ```
 
 ### macOS setup
 
-Install patched version of hidapi:
-
 ```shell
-git clone https://github.com/signal11/hidapi.git
-cd hidapi
-git remote add dylanmckay https://github.com/dylanmckay/hidapi.git
-git fetch dylanmckay
-git checkout mac-hid-interface-support
-./bootstrap
-./configure
-make
-sudo make install
-cd ../
+brew instal hidapi # brew qmk/qmk/qmk already installed this
 ```
+
 
 ## Building
 
