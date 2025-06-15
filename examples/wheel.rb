@@ -8,8 +8,10 @@ Signal.trap("INT") do
   exit(0)
 end
 
-args.cycle do |arg|
-  %x[#{hid} #{arg}]
-  sleep 0.6
-end
+angle = 0
 
+loop do
+  angle = (angle + 10) % 255
+  %x[#{hid} rgblight_color #{angle} 255]
+  sleep 0.2
+end

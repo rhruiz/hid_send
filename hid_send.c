@@ -218,12 +218,8 @@ bool oled_write(hid_device* device, char *msg) {
                       strlen(msg));
 }
 
-bool set_rgblight_to(hid_device* device, uint16_t hue, uint8_t sat) {
-  uint8_t msg[3];
-
-  msg[0] = (uint8_t)((hue & 0xFF00) >> 8);
-  msg[1] = (uint8_t)((hue & 0x00FF));
-  msg[2] = sat;
+bool set_rgblight_to(hid_device* device, uint8_t hue, uint8_t sat) {
+  uint8_t msg[2] = { hue, sat };
 
   return send_message(device, id_rgblight_color, msg, sizeof(msg), msg,
                       sizeof(msg));
@@ -292,12 +288,12 @@ int main(int argc, char** argv) {
     if (argc < 4) {
       fprintf(stderr, "Usage %s rgblight_color hue sat\n", argv[0]);
     } else {
-      uint16_t hue;
+      uint8_t hue;
       uint8_t sat;
 
-      if (sscanf(argv[2], "%" SCNu16 "", &hue) == 1 &&
+      if (sscanf(argv[2], "%" SCNu8 "", &hue) == 1 &&
           sscanf(argv[3], "%" SCNu8 "", &sat) == 1) {
-        if (hue >= 0 && hue <= 360 && sat >= 0 && sat <= 255) {
+        if (hue >= 0 && hue <= 255 && sat >= 0 && sat <= 255) {
           res = set_rgblight_to(device, hue, sat);
         } else {
           fprintf(stderr, "Invalid hue / sat\n");
