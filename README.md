@@ -1,13 +1,6 @@
 # Send HID raw data command line tool
 
-This sends commands to be used by qmk firmware that handles raw HID data.
-
-This is completely stolen from [Zeal60 command line tool](https://github.com/Wilba6582/zeal60).
-
-
-## Setup
-
-This asumes `qmk` is cloned next to this folder:
+This sends commands to be used by qmk t to this folder:
 
 ```
 git clone git@github.com:rhruiz/hid_send.git

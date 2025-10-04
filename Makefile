@@ -1,6 +1,7 @@
 OSNAME:=$(shell uname -s)
 
-CFLAGS=-Wno-write-strings -I../qmk_userspace -lc
+# Fix -I if yoyr qmk user space is in a different location
+CFLAGS=-Wno-write-strings -I../qmk-userspace -lc
 
 # Order of LDFLAGS matters! Remember, linking happens after compiling.
 LDFLAGS=
