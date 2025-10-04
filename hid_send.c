@@ -11,7 +11,7 @@
 #include <hidapi/hidapi.h>
 #endif
 
-// qmk includes
+// qmk userspace includes
 #include <users/rhruiz/raw_hid/api.h>
 
 #include "config.h"
